@@ -1,13 +1,10 @@
 import moment from 'moment'
-import sql from 'node-transform-mysql'
+import User from '../models/user'
 import {
     SYSTEM
 } from '../config'
 import {
     util,
-    mysql,
-    getsql,
-    transaction,
 } from '../tool'
 
 class user {
@@ -31,11 +28,7 @@ class user {
             }
 
             // 判断用户名是否存在
-            let sqlstr = sql
-                .table('web_user')
-                .where({userName:userName})
-                .select()
-            let userMsg = await mysql(sqlstr);    
+            let userMsg = await User.find({userName:userName}).limit(1)
             if(!userMsg || !userMsg.length){
                 ctx.body = util.result({
                     code: 1001,
@@ -101,12 +94,7 @@ class user {
                 random:util.randomString()
             }).paySign;
 
-            let sqlstr = sql
-                .table('web_user')
-                .data({userName:userName,passWord:passWord,createTime:createTime,token:token})
-                .insert()
-
-            let result = await mysql(sqlstr);
+            let result = User.create({userName:userName,passWord:passWord,createTime:createTime,token:token});
 
             ctx.body = util.result({
                 data: result
@@ -124,11 +112,7 @@ class user {
 
     // 查询用户是否存在
     async isUserHave(userName){
-        let sqlstr = sql
-            .table('web_user')
-            .where({userName:userName})
-            .select()
-        let result = await mysql(sqlstr);
+        let result = await User.find({userName:userName}).limit(1);
         return result.length
     }
 
@@ -140,33 +124,6 @@ class user {
         ctx.body = util.result({
             data:'成功'
         });
-    }
-
-    async test(ctx){
-        let arr = [];
-        let sqlstr = sql
-            .table('test1')
-            .data({name:'wing'})
-            .insert();
-        let sqlstr2 = sql
-            .table('test2')
-            .data({age:18})
-            .insert();
-        arr.push(sqlstr);
-        arr.push(sqlstr2);
-
-        console.log(arr)
-        try{
-            await transaction(arr)
-            ctx.body = util.result({
-                data:'成功'
-            });
-        }catch(err){
-            ctx.body = util.result({
-                code:44444,
-                desc:'失败'
-            });
-        }
     }
 }
 

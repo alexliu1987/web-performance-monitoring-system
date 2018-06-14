@@ -19,6 +19,7 @@ import {
     front,
     back
 } from './routes'
+import {} from './services/mongoose'
 
 const app = new Koa()
 const env = process.env.BABEL_ENV || 'development'

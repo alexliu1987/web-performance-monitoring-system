@@ -15,7 +15,7 @@ new Vue({
     },
     beforeMount() {
         let userMsg = util.getStorage('local','userMsg')?JSON.parse(util.getStorage('local','userMsg')):{}
-        this.userId = userMsg.id
+        this.userId = userMsg._id
         this.appId = util.getQueryString('appId')
         if(this.appId){
             this.getDetail()
